@@ -1,0 +1,49 @@
+// index.html
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Передбачення ✨ — випадкова порада на щодень</title>
+  <meta name="description" content="Мінімальний статичний сайт українською: випадкові передбачення за категоріями Кар’єра, Кохання, Здоров’я. Жодних серверів — усе клієнтськи." />
+  <link rel="preload" href="styles.css" as="style" />
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>Передбачення ✨</h1>
+      <p class="subtitle">Лайт-версія: випадкова порада без серверів</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card" aria-labelledby="fortune-title">
+      <h2 id="fortune-title" class="visually-hidden">Область передбачення</h2>
+      <p id="fortune-text" class="fortune-text" aria-live="polite">Натисніть «Дай передбачення», щоб отримати повідомлення.</p>
+    </section>
+
+    <section class="controls" aria-label="Керування">
+      <label for="category" class="visually-hidden">Категорія</label>
+      <select id="category" name="category" aria-label="Категорія">
+        <option value="all">Усі</option>
+        <option value="career">Кар’єра</option>
+        <option value="love">Кохання</option>
+        <option value="health">Здоров’я</option>
+      </select>
+
+      <button id="get-btn" type="button" class="btn primary">Дай передбачення</button>
+      <button id="copy-btn" type="button" class="btn" disabled>Скопіювати</button>
+    </section>
+
+    <noscript>
+      Для роботи цього сайту потрібен увімкнений JavaScript.
+    </noscript>
+  </main>
+
+  <footer class="site-footer container">
+    <small>© 2025. Публікація на GitHub Pages.</small>
+  </footer>
+</body>
+</html>
