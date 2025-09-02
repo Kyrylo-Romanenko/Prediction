@@ -1,4 +1,4 @@
-// script.js
+
 (() => {
   // Формуємо коректний шлях незалежно від підшляху репозиторію
   const DATA_URL = new URL('./data/fortunes.json', window.location.href).toString();
