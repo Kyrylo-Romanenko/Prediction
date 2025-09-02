@@ -1,12 +1,10 @@
 // script.js
-// Мінімальна клієнтська логіка без бібліотек.
-// Завантаження JSON, фільтрація, випадковий вибір, копіювання в буфер.
-
 (() => {
-  const DATA_URL = 'data/fortunes.json';
+  // Формуємо коректний шлях незалежно від підшляху репозиторію
+  const DATA_URL = new URL('./data/fortunes.json', window.location.href).toString();
 
-  let fortunesCache = null;   // [{ category, text }, ...]
-  let currentFortune = '';    // поточний текст для копіювання
+  let fortunesCache = null;
+  let currentFortune = '';
 
   const fortuneEl = document.getElementById('fortune-text');
   const categoryEl = document.getElementById('category');
@@ -15,39 +13,25 @@
 
   async function loadFortunes(){
     if (fortunesCache) return fortunesCache;
-    try{
-      const res = await fetch(DATA_URL, { cache: 'no-store' });
-      if(!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
-      if(!Array.isArray(data)) throw new Error('Невірний формат даних');
-      fortunesCache = data;
-      return fortunesCache;
-    }catch(err){
-      console.error('Помилка завантаження передбачень:', err);
-      throw err;
-    }
+    // Без { cache: 'no-store' } — Pages іноді вередує з цим заголовком
+    const res = await fetch(DATA_URL);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if(!Array.isArray(data)) throw new Error('Невірний формат даних');
+    fortunesCache = data;
+    return fortunesCache;
   }
 
-  function getRandomItem(arr){
-    const idx = Math.floor(Math.random() * arr.length);
-    return arr[idx];
-  }
+  function getRandomItem(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
   function getFortune(category){
-    if (!fortunesCache || !Array.isArray(fortunesCache)) return null;
-
-    const pool = category === 'all'
-      ? fortunesCache
-      : fortunesCache.filter(f => f.category === category);
-
+    const pool = category === 'all' ? fortunesCache : fortunesCache.filter(f => f.category === category);
     if (!pool.length) return null;
-
     const item = getRandomItem(pool);
     return item?.text || null;
   }
 
   async function showFortune(){
-    // Стан завантаження
     fortuneEl.textContent = '✨ ...';
     fortuneEl.classList.add('loading');
     getBtn.disabled = true;
@@ -55,7 +39,6 @@
 
     try{
       await loadFortunes();
-      // Невелика затримка для відчуття "завантажується"
       setTimeout(() => {
         const cat = categoryEl.value || 'all';
         const text = getFortune(cat) || 'Немає передбачень для цієї категорії.';
@@ -63,9 +46,10 @@
         fortuneEl.textContent = text;
         fortuneEl.classList.remove('loading');
         getBtn.disabled = false;
-        copyBtn.disabled = !text || text === 'Немає передбачень для цієї категорії.';
-      }, 350);
-    }catch(_){
+        copyBtn.disabled = !text || text.startsWith('Немає передбачень');
+      }, 300);
+    }catch(err){
+      console.error('Помилка завантаження передбачень:', err);
       fortuneEl.classList.remove('loading');
       fortuneEl.textContent = 'Не вдалося завантажити передбачення. Спробуйте пізніше.';
       getBtn.disabled = false;
@@ -74,49 +58,30 @@
   }
 
   async function copyFortune(){
-    if(!currentFortune){
-      return;
-    }
-    const originalLabel = copyBtn.textContent;
+    if(!currentFortune) return;
+    const original = copyBtn.textContent;
     try{
-      if (navigator.clipboard && navigator.clipboard.writeText){
+      if(navigator.clipboard?.writeText){
         await navigator.clipboard.writeText(currentFortune);
       }else{
-        // Фолбек
         const ta = document.createElement('textarea');
-        ta.value = currentFortune;
-        ta.setAttribute('readonly', '');
-        ta.style.position = 'absolute';
-        ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
+        ta.value = currentFortune; ta.setAttribute('readonly','');
+        ta.style.position='absolute'; ta.style.left='-9999px';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
       }
       copyBtn.textContent = 'Скопійовано!';
       copyBtn.disabled = true;
-      setTimeout(() => {
-        copyBtn.textContent = originalLabel;
-        copyBtn.disabled = false;
-      }, 1200);
-    }catch(err){
-      console.error('Не вдалося скопіювати:', err);
+      setTimeout(()=>{ copyBtn.textContent = original; copyBtn.disabled = false; }, 1200);
+    }catch{
       copyBtn.textContent = 'Помилка копіювання';
-      setTimeout(() => { copyBtn.textContent = originalLabel; }, 1200);
+      setTimeout(()=>{ copyBtn.textContent = original; }, 1200);
     }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    // Попереднє завантаження даних (тихо)
-    loadFortunes().catch(() => { /* тихо */ });
-
+    loadFortunes().catch(()=>{});
     getBtn.addEventListener('click', showFortune);
     copyBtn.addEventListener('click', copyFortune);
-
-    // Зміна категорії не тригерить показ — лише впливає на вибір
-    categoryEl.addEventListener('change', () => {
-      // Після зміни категорії ще немає нового тексту — блок копіювання вимкнено
-      copyBtn.disabled = true;
-    });
+    categoryEl.addEventListener('change', () => { copyBtn.disabled = true; });
   });
 })();
