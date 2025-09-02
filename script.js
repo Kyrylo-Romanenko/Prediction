@@ -7,7 +7,6 @@
   let currentFortune = '';
 
   const fortuneEl = document.getElementById('fortune-text');
-  const categoryEl = document.getElementById('category');
   const getBtn = document.getElementById('get-btn');
   const copyBtn = document.getElementById('copy-btn');
 
@@ -24,12 +23,11 @@
 
   function getRandomItem(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-  function getFortune(category){
-    const pool = category === 'all' ? fortunesCache : fortunesCache.filter(f => f.category === category);
-    if (!pool.length) return null;
-    const item = getRandomItem(pool);
-    return item?.text || null;
-  }
+function getFortune(){
+  if (!fortunesCache.length) return null;
+  const item = getRandomItem(fortunesCache);
+  return item?.text || null;
+}
 
   async function showFortune(){
     fortuneEl.textContent = '✨ ...';
@@ -40,8 +38,7 @@
     try{
       await loadFortunes();
       setTimeout(() => {
-        const cat = categoryEl.value || 'all';
-        const text = getFortune(cat) || 'Немає передбачень для цієї категорії.';
+        const text = getFortune() || 'Немає передбачень.';
         currentFortune = text;
         fortuneEl.textContent = text;
         fortuneEl.classList.remove('loading');
@@ -82,6 +79,6 @@
     loadFortunes().catch(()=>{});
     getBtn.addEventListener('click', showFortune);
     copyBtn.addEventListener('click', copyFortune);
-    categoryEl.addEventListener('change', () => { copyBtn.disabled = true; });
+
   });
 })();
