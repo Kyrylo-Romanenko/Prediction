@@ -14,3 +14,23 @@
 - Усе працює клієнтськи через `fetch`.
 
 ## Структура
+/
+index.html
+styles.css
+script.js
+data/
+fortunes.json
+README.md
+LICENSE
+
+
+Категорії в JSON: `career`, `love`, `health` (етикетки інтерфейсу українською).
+
+## Запуск локально
+Потребується будь-який простий HTTP-сервер (через `file://` `fetch` не працюватиме).
+
+```bash
+# Python 3
+python -m http.server 8080
+# Відкрийте у браузері:
+# http://localhost:8080
