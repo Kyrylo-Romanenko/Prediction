@@ -1,33 +1,81 @@
-
+// script.js  (повна заміна)
 (() => {
-  // Формуємо коректний шлях незалежно від підшляху репозиторію
-  const DATA_URL = new URL('./data/fortunes.json', window.location.href).toString();
+  // Визначаємо, який JSON і який бейдж показувати
+  function getSeasonInfo(today = new Date()){
+    const m = today.getMonth();   // 0=січень ... 11=грудень
+    const d = today.getDate();
 
+    if (m === 11 && d >= 17 && d <= 31) {
+      return {
+        key: 'xmas',
+        url: new URL('./data/fortunes_christmas.json', window.location.href).toString(),
+        badge: '🎄 Різдвяні'
+      };
+    }
+    if (m === 3 && d === 1) {
+      return {
+        key: 'april',
+        url: new URL('./data/fortunes_april.json', window.location.href).toString(),
+        badge: '😄 1 квітня'
+      };
+    }
+    return {
+      key: 'default',
+      url: new URL('./data/fortunes.json', window.location.href).toString(),
+      badge: '' // без бейджа
+    };
+  }
+
+  // Проста сесійна «памʼять», без складних структур
+  let cacheKey = null;
   let fortunesCache = null;
   let currentFortune = '';
 
-  const fortuneEl = document.getElementById('fortune-text');
-  const getBtn = document.getElementById('get-btn');
-  const copyBtn = document.getElementById('copy-btn');
+  const fortuneEl  = document.getElementById('fortune-text');
+  const categoryEl = document.getElementById('category');
+  const getBtn     = document.getElementById('get-btn');
+  const copyBtn    = document.getElementById('copy-btn');
+
+  // Додаємо/оновлюємо сезонний бейдж у картці
+  const cardEl = document.querySelector('.card');
+  const badgeEl = document.createElement('div');
+  badgeEl.className = 'season-badge';
+  cardEl?.insertBefore(badgeEl, cardEl.firstChild);
 
   async function loadFortunes(){
-    if (fortunesCache) return fortunesCache;
-    // Без { cache: 'no-store' } — Pages іноді вередує з цим заголовком
-    const res = await fetch(DATA_URL);
-    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const { key, url, badge } = getSeasonInfo();
+
+    // показуємо/ховаємо бейдж
+    if (badge) {
+      badgeEl.textContent = badge;
+      badgeEl.style.display = 'inline-flex';
+    } else {
+      badgeEl.style.display = 'none';
+    }
+
+    // якщо вже завантажено для цієї пори — не фетчимо вдруге
+    if (fortunesCache && cacheKey === key) return fortunesCache;
+
+    const res = await fetch(url); // без no-store — на Pages все ок
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    if(!Array.isArray(data)) throw new Error('Невірний формат даних');
+    if (!Array.isArray(data)) throw new Error('Невірний формат даних');
+
+    cacheKey = key;
     fortunesCache = data;
     return fortunesCache;
   }
 
   function getRandomItem(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-function getFortune(){
-  if (!fortunesCache.length) return null;
-  const item = getRandomItem(fortunesCache);
-  return item?.text || null;
-}
+  function pickFortune(fortunes, category){
+    const pool = (!category || category === 'all')
+      ? fortunes
+      : fortunes.filter(f => f.category === category);
+    if (!pool.length) return null;
+    const item = getRandomItem(pool);
+    return item?.text || null;
+  }
 
   async function showFortune(){
     fortuneEl.textContent = '✨ ...';
@@ -36,9 +84,10 @@ function getFortune(){
     copyBtn.disabled = true;
 
     try{
-      await loadFortunes();
+      const fortunes = await loadFortunes();
       setTimeout(() => {
-        const text = getFortune() || 'Немає передбачень.';
+        const cat = categoryEl ? (categoryEl.value || 'all') : 'all';
+        const text = pickFortune(fortunes, cat) || 'Немає передбачень для цієї категорії.';
         currentFortune = text;
         fortuneEl.textContent = text;
         fortuneEl.classList.remove('loading');
@@ -58,7 +107,7 @@ function getFortune(){
     if(!currentFortune) return;
     const original = copyBtn.textContent;
     try{
-      if(navigator.clipboard?.writeText){
+      if (navigator.clipboard?.writeText){
         await navigator.clipboard.writeText(currentFortune);
       }else{
         const ta = document.createElement('textarea');
@@ -79,6 +128,6 @@ function getFortune(){
     loadFortunes().catch(()=>{});
     getBtn.addEventListener('click', showFortune);
     copyBtn.addEventListener('click', copyFortune);
-
+    categoryEl?.addEventListener('change', () => { copyBtn.disabled = true; });
   });
 })();
