@@ -148,3 +148,18 @@ select:focus, .btn:focus{
   white-space: nowrap;
   clip-path: inset(50%);
 }
+
+/* Сезонний бейдж у картці */
+.season-badge{
+  display: none; /* ховаємо, якщо не сезон */
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: rgba(118,169,255,0.08);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  width: fit-content;
+  margin-bottom: 10px;
+}
