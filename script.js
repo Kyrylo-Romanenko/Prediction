@@ -5,7 +5,7 @@
     const m = today.getMonth();   // 0=січень ... 11=грудень
     const d = today.getDate();
 
-    if (m === 11 && d >= 17 && d <= 31) {
+    if (m === 7 && d >= 17 && d <= 31) {
       return {
         key: 'xmas',
         url: new URL('./data/fortunes_christmas.json', window.location.href).toString(),
