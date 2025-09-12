@@ -21,7 +21,7 @@
     }
     return {
       key: 'default',
-      url: new URL('./data/fortunes.json', window.location.href).toString(),
+      url: new URL('./data/fortunes-drinks.json', window.location.href).toString(),
       badge: '' // без бейджа
     };
   }
