@@ -22,7 +22,7 @@
     return {
       key: 'default',
       url: new URL('./data/fortunes-drinks.json', window.location.href).toString(),
-      badge: '' // без бейджа
+      badge: '🍹' // без бейджа
     };
   }
 
