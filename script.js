@@ -19,6 +19,13 @@
         badge: '😄 1 квітня'
       };
     }
+    if (m === 2 && d === 13) {
+      return {
+        key: '13february',
+        url: new URL('./data/13february.json', window.location.href).toString(),
+        badge: '❤️'
+      };
+    }
     return {
       key: 'default',
       url: new URL('./data/fortunes.json', window.location.href).toString(),
