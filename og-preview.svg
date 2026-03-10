@@ -1,0 +1,35 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#07090D"/>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <g opacity="0.35">
+    <circle cx="602" cy="268" r="122" fill="url(#glow)"/>
+    <circle cx="602" cy="268" r="188" fill="url(#glowSoft)"/>
+  </g>
+  <rect x="358" y="82" width="484" height="466" rx="38" fill="#0C0F16" stroke="#CBD7FF" stroke-opacity="0.18"/>
+  <rect x="382" y="106" width="436" height="418" rx="30" fill="url(#card)" stroke="#C9B07A" stroke-opacity="0.22"/>
+  <rect x="410" y="134" width="380" height="362" rx="24" stroke="#C9B07A" stroke-opacity="0.24"/>
+  <rect x="438" y="162" width="324" height="306" rx="20" stroke="#C9B07A" stroke-opacity="0.18" stroke-dasharray="5 6"/>
+  <path d="M601.5 236L620.291 263.709L648 282.5L620.291 301.291L601.5 329L582.709 301.291L555 282.5L582.709 263.709L601.5 236Z" fill="#C9B07A"/>
+  <text x="600" y="434" fill="#93A0B5" font-family="Georgia, serif" font-size="24" letter-spacing="5" text-anchor="middle">TAROT FORTUNE</text>
+  <text x="120" y="170" fill="#EDF1F7" font-family="Georgia, serif" font-size="64" font-weight="700">Передбачення ✨</text>
+  <text x="120" y="232" fill="#93A0B5" font-family="Georgia, serif" font-size="30">Містична мінімалістична карта, яка відкриває настрій дня.</text>
+  <text x="120" y="288" fill="#C9B07A" font-family="Georgia, serif" font-size="28">Зберігай. Ділись. Повертайся за новим знаком.</text>
+  <defs>
+    <linearGradient id="bg" x1="600" y1="0" x2="600" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#10141C"/>
+      <stop offset="1" stop-color="#07090D"/>
+    </linearGradient>
+    <linearGradient id="card" x1="600" y1="106" x2="600" y2="524" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#101522"/>
+      <stop offset="1" stop-color="#05070B"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(602 268) rotate(90) scale(122)">
+      <stop stop-color="#C9B07A" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#C9B07A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowSoft" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(602 268) rotate(90) scale(188)">
+      <stop stop-color="#6C7DB8" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#6C7DB8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>
