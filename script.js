@@ -39,7 +39,6 @@
   let currentFortune = "";
 
   const fortuneEl = document.getElementById("fortune-text");
-  const getBtn = document.getElementById("get-btn");
   const saveBtn = document.getElementById("save-btn");
   const copyBtn = document.getElementById("copy-btn");
   const shareBtn = document.getElementById("share-btn");
@@ -348,7 +347,7 @@
 
   async function showFortune() {
     fortuneEl.classList.add("loading");
-    getBtn.disabled = true;
+    tarotCardEl?.setAttribute("aria-busy", "true");
     setShareEnabled(false);
 
     try {
@@ -360,8 +359,9 @@
         currentFortune = text;
         fortuneEl.textContent = text;
         await rotateCardTo(180, CARD_REVEAL_MS);
+        tarotCardEl?.classList.add("is-front-facing");
         fortuneEl.classList.remove("loading");
-        getBtn.disabled = false;
+        tarotCardEl?.removeAttribute("aria-busy");
         setShareEnabled(canShare);
         updateSaveButtonState();
         updateShareHint("Карта відкрита. Можна копіювати або поширювати передбачення.");
@@ -370,11 +370,13 @@
       }
 
       await rotateCardTo(cardRotation + 180, CARD_HALF_SPIN_MS);
+      tarotCardEl?.classList.remove("is-front-facing");
       currentFortune = text;
       fortuneEl.textContent = text;
       await rotateCardTo(cardRotation + 180, CARD_HALF_SPIN_MS);
+      tarotCardEl?.classList.add("is-front-facing");
       fortuneEl.classList.remove("loading");
-      getBtn.disabled = false;
+      tarotCardEl?.removeAttribute("aria-busy");
       setShareEnabled(canShare);
       updateSaveButtonState();
       updateShareHint("Карта перевернулась і показала новий знак.");
@@ -383,11 +385,27 @@
       currentFortune = "";
       fortuneEl.classList.remove("loading");
       fortuneEl.textContent = "Не вдалося завантажити передбачення. Спробуйте пізніше.";
-      getBtn.disabled = false;
+      tarotCardEl?.removeAttribute("aria-busy");
       setShareEnabled(false);
       updateSaveButtonState();
       updateShareHint("Поширення стане доступним після успішного завантаження передбачення.");
     }
+  }
+
+  function handleCardActivate(event) {
+    if (event.type === "keydown" && event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    if (event.type === "keydown") {
+      event.preventDefault();
+    }
+
+    if (saveBtn?.contains(event.target)) {
+      return;
+    }
+
+    showFortune();
   }
 
   async function copyFortune(customText = currentFortune, successLabel = "Скопійовано!") {
@@ -505,7 +523,8 @@
     renderSavedFortunes();
     setActiveView("main");
     loadFortunes().catch(() => {});
-    getBtn.addEventListener("click", showFortune);
+    tarotCardEl?.addEventListener("click", handleCardActivate);
+    tarotCardEl?.addEventListener("keydown", handleCardActivate);
     saveBtn.addEventListener("click", saveCurrentFortune);
     copyBtn.addEventListener("click", () => {
       copyFortune().then((copied) => {

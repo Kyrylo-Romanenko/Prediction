@@ -59,7 +59,7 @@
       <div class="card-stage">
       <h2 id="fortune-title" class="visually-hidden">Карта передбачення</h2>
       <div class="card-shell">
-        <article class="tarot-card" id="tarot-card" aria-live="polite" aria-label="Карта передбачення">
+        <article class="tarot-card" id="tarot-card" aria-live="polite" aria-label="Карта передбачення" role="button" tabindex="0">
           <div class="tarot-card__inner">
             <div class="tarot-card__face tarot-card__face--back" aria-hidden="true">
               <div class="tarot-card__ornament tarot-card__ornament--outer"></div>
@@ -74,17 +74,13 @@
               <div class="tarot-card__halo"></div>
               <div class="tarot-card__content">
                 <div class="tarot-card__eyebrow">Mystic Minimal</div>
-                <p id="fortune-text" class="fortune-text">Натисніть «Дай передбачення», щоб відкрити карту.</p>
+                <p id="fortune-text" class="fortune-text">Торкніться карти, щоб відкрити передбачення.</p>
               </div>
             </div>
           </div>
         </article>
       </div>
       </div>
-
-      <section class="controls" aria-label="Керування">
-        <button id="get-btn" type="button" class="btn primary">Дай передбачення</button>
-      </section>
 
       <section class="action-row" aria-labelledby="share-title">
         <h2 id="share-title" class="visually-hidden">Дії з передбаченням</h2>

@@ -273,6 +273,8 @@ body[data-theme="light"]::before{
   aspect-ratio: 5 / 8;
   perspective: 1800px;
   -webkit-perspective: 1800px;
+  cursor: pointer;
+  outline: none;
 }
 
 .tarot-card__inner{
@@ -305,6 +307,10 @@ body[data-theme="light"]::before{
   display: grid;
   place-items: center;
   transform: rotateY(0deg) translateZ(0.1px);
+}
+
+.tarot-card.is-front-facing .tarot-card__face--back > *{
+  opacity: 0;
 }
 
 body[data-theme="light"] .tarot-card__face--back{
@@ -407,12 +413,6 @@ body[data-theme="light"] .tarot-card__face--back{
 
 .fortune-text.loading{
   opacity: .72;
-}
-
-.controls{
-  margin-top: 16px;
-  display: flex;
-  justify-content: center;
 }
 
 .btn,
@@ -528,7 +528,7 @@ body[data-theme="light"] .tarot-card__face--back{
 }
 
 .saved-shortcut{
-  margin: 18px auto 0;
+  margin: 16px auto 0;
   width: min(100%, 420px);
   min-height: 56px;
   padding: 0 18px;
@@ -749,6 +749,10 @@ body[data-theme="light"] .season-badge{
     line-height: 1.38;
   }
 
+  .saved-shortcut{
+    margin-top: 12px;
+  }
+
   .icon-actions{
     justify-content: center;
   }
@@ -785,7 +789,6 @@ body[data-theme="light"] .season-badge{
   }
 
   .saved-shortcut{
-    margin-top: 14px;
     min-height: 52px;
     padding: 0 14px;
     border-radius: 16px;
