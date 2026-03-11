@@ -65,7 +65,7 @@
               <div class="tarot-card__ornament tarot-card__ornament--outer"></div>
               <div class="tarot-card__ornament tarot-card__ornament--inner"></div>
               <div class="tarot-card__sigil">✦</div>
-              <p class="tarot-card__label">Tarot Fortune</p>
+              <p class="tarot-card__label">Fortune</p>
             </div>
             <div class="tarot-card__face tarot-card__face--front">
               <button id="save-btn" type="button" class="save-chip" disabled aria-label="Зберегти передбачення" title="Зберегти передбачення">
@@ -81,7 +81,7 @@
                 <span class="magic-burst__particle"></span>
               </div>
               <div class="tarot-card__content">
-                <div class="tarot-card__eyebrow">Mystic Minimal</div>
+                <div class="tarot-card__eyebrow">Mystic</div>
                 <p id="fortune-text" class="fortune-text">Торкніться карти, щоб відкрити передбачення.</p>
               </div>
             </div>
@@ -93,24 +93,15 @@
       <section class="action-row" aria-labelledby="share-title">
         <h2 id="share-title" class="visually-hidden">Дії з передбаченням</h2>
         <div class="icon-actions" role="group" aria-label="Дії з передбаченням">
-        <button id="copy-btn" type="button" class="icon-btn" disabled aria-label="Скопіювати" title="Скопіювати">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9h10v10H9z"/><path d="M5 5h10v2H7v8H5z"/></svg>
-        </button>
-        <button id="share-btn" type="button" class="icon-btn" disabled aria-label="Поділитися" title="Поділитися">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 8a3 3 0 1 0-2.8-4H12a3 3 0 0 0 .2 1.1L8 7.6a3 3 0 0 0-2-.8 3 3 0 1 0 0 6c.7 0 1.4-.2 2-.7l4.3 2.5A3 3 0 1 0 13 16c0-.4-.1-.8-.2-1.1L8.5 12.4a3.1 3.1 0 0 0 0-.8l4.3-2.5c.5.5 1.3.9 2.2.9Z"/></svg>
-        </button>
-        <button type="button" class="icon-btn share-link" data-share-target="instagram" disabled aria-label="Instagram" title="Instagram">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm5 2.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5Zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5Zm5-3.2a1.2 1.2 0 1 1-1.2 1.2A1.2 1.2 0 0 1 17 6.3Z"/></svg>
-        </button>
-        <button type="button" class="icon-btn share-link" data-share-target="facebook" disabled aria-label="Facebook" title="Facebook">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.6 1.7-1.6h1.6V3.8c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4.1V10H8v3h2.6v8z"/></svg>
-        </button>
-        <button type="button" class="icon-btn share-link" data-share-target="x" disabled aria-label="X" title="X">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 3H22l-6.8 7.8L23 21h-6.2l-4.9-6.4L6.3 21H3.2l7.3-8.3L1 3h6.3l4.4 5.8zm-1.1 16h1.7L6.4 4.9H4.6z"/></svg>
-        </button>
-        <button type="button" class="icon-btn share-link" data-share-target="threads" disabled aria-label="Threads" title="Threads">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 11.2c-.2-3-1.9-4.7-4.6-4.7-2.8 0-4.8 1.9-4.8 4.6 0 2.6 1.8 4.4 4.5 4.4 1.3 0 2.5-.4 3.3-1.1.2 1.2-.5 2.6-2.9 2.6-1.3 0-2.4-.5-3.2-1.4l-1.6 1.6c1.1 1.2 2.8 1.9 4.9 1.9 4 0 5.7-2.2 5.2-5.4-.2-1.2-.8-2-1.8-2.5.1-.1.3-.1.4-.1h1.9v-1.6Zm-4.6 2.5c-1.4 0-2.3-1-2.3-2.6 0-1.6.9-2.7 2.3-2.7 1.4 0 2.3 1.1 2.4 2.8-.7-.2-1.5-.3-2.3-.3v1.6c.9 0 1.8.1 2.4.4-.4.5-1.1.8-2.5.8Z"/></svg>
-        </button>
+          <button id="copy-btn" type="button" class="icon-btn" disabled aria-label="Скопіювати текст" title="Скопіювати текст">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9h10v10H9z"/><path d="M5 5h10v2H7v8H5z"/></svg>
+          </button>
+          <button id="share-btn" type="button" class="icon-btn" disabled aria-label="Поділитися картинкою" title="Поділитися картинкою">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 8a3 3 0 1 0-2.8-4H12a3 3 0 0 0 .2 1.1L8 7.6a3 3 0 0 0-2-.8 3 3 0 1 0 0 6c.7 0 1.4-.2 2-.7l4.3 2.5A3 3 0 1 0 13 16c0-.4-.1-.8-.2-1.1L8.5 12.4a3.1 3.1 0 0 0 0-.8l4.3-2.5c.5.5 1.3.9 2.2.9Z"/></svg>
+          </button>
+          <button id="download-btn" type="button" class="icon-btn" disabled aria-label="Завантажити PNG" title="Завантажити PNG">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4h2v8h3l-4 4-4-4h3z"/><path d="M5 18h14v2H5z"/></svg>
+          </button>
         </div>
         <p id="share-hint" class="share-hint">Спочатку згенеруйте передбачення.</p>
       </section>

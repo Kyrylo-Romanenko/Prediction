@@ -42,10 +42,10 @@
   const saveBtn = document.getElementById("save-btn");
   const copyBtn = document.getElementById("copy-btn");
   const shareBtn = document.getElementById("share-btn");
+  const downloadBtn = document.getElementById("download-btn");
   const themeToggleBtn = document.getElementById("theme-toggle");
   const homeLinkBtn = document.getElementById("home-link");
   const shareHintEl = document.getElementById("share-hint");
-  const shareLinkEls = Array.from(document.querySelectorAll("[data-share-target]"));
   const tarotCardEl = document.getElementById("tarot-card");
   const tarotCardInnerEl = tarotCardEl?.querySelector(".tarot-card__inner");
   const magicBurstEl = document.getElementById("magic-burst");
@@ -102,11 +102,9 @@
 
   function setShareEnabled(enabled) {
     shareBtn.disabled = !enabled;
+    downloadBtn.disabled = !enabled;
     saveBtn.disabled = !enabled;
     copyBtn.disabled = !enabled;
-    shareLinkEls.forEach((button) => {
-      button.disabled = !enabled;
-    });
   }
 
   function updateShareHint(message) {
@@ -195,6 +193,119 @@
   function buildShareText() {
     if (!currentFortune) return "";
     return `${currentFortune}\n\nПередбачення ✨ ${window.location.href}`;
+  }
+
+  function drawRoundedRect(ctx, x, y, width, height, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+  }
+
+  function wrapText(ctx, text, maxWidth) {
+    const words = text.split(/\s+/);
+    const lines = [];
+    let line = "";
+
+    words.forEach((word) => {
+      const candidate = line ? `${line} ${word}` : word;
+      if (ctx.measureText(candidate).width <= maxWidth) {
+        line = candidate;
+      } else {
+        if (line) lines.push(line);
+        line = word;
+      }
+    });
+
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  async function buildFortuneImageFile() {
+    if (!currentFortune) return null;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 760;
+    canvas.height = 1060;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, "#0F1420");
+    gradient.addColorStop(1, "#07090D");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const halo = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, 220);
+    halo.addColorStop(0, "rgba(201,176,122,0.22)");
+    halo.addColorStop(1, "rgba(201,176,122,0)");
+    ctx.fillStyle = halo;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const cardWidth = canvas.width;
+    const cardHeight = canvas.height;
+    const cardX = (canvas.width - cardWidth) / 2;
+    const cardY = (canvas.height - cardHeight) / 2;
+
+    drawRoundedRect(ctx, cardX, cardY, cardWidth, cardHeight, 36);
+    ctx.fillStyle = "rgba(12,15,22,0.97)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(203,215,255,0.16)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    drawRoundedRect(ctx, cardX + 28, cardY + 28, cardWidth - 56, cardHeight - 56, 30);
+    ctx.strokeStyle = "rgba(126,147,207,0.22)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    drawRoundedRect(ctx, cardX + 58, cardY + 58, cardWidth - 116, cardHeight - 116, 24);
+    ctx.strokeStyle = "rgba(72,89,144,0.26)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    drawRoundedRect(ctx, cardX + 84, cardY + 84, cardWidth - 168, cardHeight - 168, 20);
+    ctx.strokeStyle = "rgba(201,176,122,0.12)";
+    ctx.setLineDash([10, 10]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const innerGlow = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, 180);
+    innerGlow.addColorStop(0, "rgba(201,176,122,0.14)");
+    innerGlow.addColorStop(0.45, "rgba(62,90,160,0.08)");
+    innerGlow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = innerGlow;
+    ctx.fillRect(cardX + 70, cardY + 140, cardWidth - 140, cardHeight - 280);
+
+    ctx.fillStyle = "#C9B07A";
+    ctx.font = '600 24px Georgia, "Times New Roman", serif';
+    ctx.textAlign = "center";
+    ctx.fillText("MYSTIC", canvas.width / 2, cardY + 250);
+
+    ctx.fillStyle = "#EDF1F7";
+    ctx.font = '700 28px Georgia, "Times New Roman", serif';
+    const lines = wrapText(ctx, currentFortune, 330);
+    const lineHeight = 42;
+    const startY = cardY + 520 - ((lines.length - 1) * lineHeight) / 2;
+    lines.forEach((line, index) => {
+      ctx.fillText(line, canvas.width / 2, startY + index * lineHeight);
+    });
+
+    ctx.fillStyle = "rgba(147,160,181,0.95)";
+    ctx.font = '400 20px Georgia, "Times New Roman", serif';
+    ctx.fillText("Передбачення ✦", canvas.width / 2, cardY + cardHeight - 78);
+
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+    if (!blob) return null;
+
+    return new File([blob], "prediction-card.png", { type: "image/png" });
   }
 
   function loadSavedFortunes() {
@@ -309,24 +420,6 @@
     renderSavedFortunes();
     updateSaveButtonState();
     updateShareHint("Збережене передбачення видалено.");
-  }
-
-  function buildShareUrl(target) {
-    const text = buildShareText();
-    const pageUrl = window.location.href;
-    const encodedText = encodeURIComponent(text);
-    const encodedUrl = encodeURIComponent(pageUrl);
-
-    switch (target) {
-      case "facebook":
-        return `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
-      case "x":
-        return `https://twitter.com/intent/tweet?text=${encodeURIComponent(currentFortune)}&url=${encodedUrl}`;
-      case "threads":
-        return `https://www.threads.net/intent/post?text=${encodedText}`;
-      default:
-        return pageUrl;
-    }
   }
 
   async function loadFortunes() {
@@ -462,43 +555,72 @@
   async function shareNative() {
     if (!currentFortune) return;
 
-    const shareData = {
-      title: "Передбачення ✨",
-      text: currentFortune,
-      url: window.location.href
-    };
+    const imageFile = await buildFortuneImageFile();
+    const text = currentFortune;
+    const url = window.location.href;
 
-    if (navigator.share) {
+    if (navigator.share && imageFile && navigator.canShare?.({ files: [imageFile] })) {
       try {
-        await navigator.share(shareData);
-        updateShareHint("Передбачення відправлено через системне меню поширення.");
+        await navigator.share({
+          title: "Передбачення ✨",
+          text,
+          url,
+          files: [imageFile]
+        });
+        updateShareHint("Картинку відкрито в системному меню поширення.");
         return;
       } catch (err) {
         if (err?.name === "AbortError") return;
       }
     }
 
-    const copied = await copyFortune(buildShareText(), "Текст для поширення скопійовано!");
-    if (copied) {
-      updateShareHint("Текст скопійовано. Можна вставити його у будь-який застосунок.");
-    }
-  }
-
-  async function handleShareLinkClick(event) {
-    const target = event.currentTarget?.dataset.shareTarget;
-    if (!target || !currentFortune) return;
-
-    if (target === "instagram") {
-      const copied = await copyFortune(buildShareText(), "Скопійовано для Instagram!");
-      if (copied) {
-        updateShareHint("Instagram не підтримує прямий веб-шеринг тексту, тому текст скопійовано для вставки вручну.");
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Передбачення ✨",
+          text,
+          url
+        });
+        updateShareHint("Текст і посилання відкрито в системному меню поширення.");
+        return;
+      } catch (err) {
+        if (err?.name === "AbortError") return;
       }
+    }
+
+    if (imageFile) {
+      await downloadImage(imageFile, false);
+      updateShareHint("PNG збережено. Тепер можна поділитися ним вручну.");
       return;
     }
 
-    const shareUrl = buildShareUrl(target);
-    window.open(shareUrl, "_blank", "noopener,noreferrer");
-    updateShareHint(`Відкрито вікно поширення: ${event.currentTarget.getAttribute("aria-label")}.`);
+    const copied = await copyFortune(buildShareText(), "Текст для поширення скопійовано!");
+    if (copied) {
+      updateShareHint("Картинку не вдалося підготувати, тому текст скопійовано.");
+    }
+  }
+
+  async function downloadImage(providedFile = null, announce = true) {
+    if (!currentFortune) return;
+
+    const imageFile = providedFile || await buildFortuneImageFile();
+    if (!imageFile) {
+      updateShareHint("Не вдалося згенерувати PNG-картку.");
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(imageFile);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = imageFile.name;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+
+    if (announce) {
+      updateShareHint("PNG-картку завантажено.");
+    }
   }
 
   function handleSavedListClick(event) {
@@ -552,6 +674,9 @@
       });
     });
     shareBtn.addEventListener("click", shareNative);
+    downloadBtn.addEventListener("click", () => {
+      downloadImage();
+    });
     themeToggleBtn?.addEventListener("click", toggleTheme);
     menuToggleBtn?.addEventListener("click", openMenu);
     menuCloseBtn?.addEventListener("click", closeMenu);
@@ -560,9 +685,6 @@
     savedShortcutBtn?.addEventListener("click", openSavedView);
     viewButtons.forEach((button) => {
       button.addEventListener("click", handleViewChange);
-    });
-    shareLinkEls.forEach((button) => {
-      button.addEventListener("click", handleShareLinkClick);
     });
     savedListEl?.addEventListener("click", handleSavedListClick);
     updateSaveButtonState();
