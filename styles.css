@@ -48,6 +48,9 @@ body{
   font-family: Georgia, "Times New Roman", serif;
   line-height: 1.5;
   color: var(--text);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   background:
     radial-gradient(900px 540px at 50% -10%, rgba(201,176,122,0.1), transparent 70%),
     radial-gradient(700px 700px at 0% 0%, rgba(90,105,161,0.12), transparent 70%),
@@ -79,6 +82,11 @@ body[data-theme="light"]::before{
   padding: 28px 24px;
 }
 
+main.container{
+  flex: 1 0 auto;
+  width: 100%;
+}
+
 .site-header{
   border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, var(--header-glow), rgba(255,255,255,0));
@@ -96,6 +104,7 @@ body[data-theme="light"]::before{
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
 }
 
 .home-link{
@@ -155,6 +164,23 @@ body[data-theme="light"]::before{
   line-height: 1;
   color: var(--accent);
   text-shadow: 0 0 14px rgba(201,176,122,0.22);
+}
+
+.menu-tooltip{
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(201,176,122,0.22);
+  background: var(--panel-strong);
+  color: var(--text);
+  font-size: .8rem;
+  line-height: 1.3;
+  white-space: nowrap;
+  box-shadow: 0 18px 36px rgba(0,0,0,0.24);
+  animation: tooltipFloat 3s ease-in-out infinite;
+  z-index: 5;
 }
 
 .menu-backdrop{
@@ -224,20 +250,75 @@ body[data-theme="light"]::before{
   display: block;
 }
 
+#view-main.view-section.is-active{
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .card-stage{
-  margin-top: 24px;
+  margin-top: clamp(4px, 1vh, 14px);
   display: grid;
   place-items: center;
 }
 
 .card-shell{
   position: relative;
-  width: min(100%, 420px);
-  padding: 18px;
+  width: min(100%, 400px, calc((100dvh - 250px) * 0.625));
+  padding: 14px;
   border-radius: 36px;
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
+}
+
+.deck-hint{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px auto 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--button-bg);
+  color: var(--muted);
+  font: inherit;
+  font-size: .82rem;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .08s ease;
+}
+
+.deck-hint:hover{
+  background: var(--button-hover);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.deck-hint:focus{
+  outline: none;
+  color: var(--text);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(201,176,122,.14);
+}
+
+.deck-hint:active{
+  transform: translateY(1px);
+}
+
+.deck-hint__badge{
+  min-width: 24px;
+  text-align: center;
+}
+
+.deck-hint__label{
+  color: inherit;
+}
+
+.deck-hint__arrow{
+  opacity: .5;
+  font-size: 1rem;
 }
 
 .save-chip{
@@ -632,8 +713,8 @@ body[data-theme="light"] .tarot-card__cta{
 }
 
 .action-row{
-  margin-top: 18px;
-  padding-top: 14px;
+  margin-top: clamp(6px, 1vh, 12px);
+  padding-top: clamp(6px, 1vh, 10px);
   border-top: 1px solid rgba(203,215,255,0.06);
 }
 
@@ -678,7 +759,7 @@ body[data-theme="light"] .tarot-card__cta{
 }
 
 .share-hint{
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   min-height: 1.4em;
   text-align: center;
   color: var(--muted);
@@ -686,33 +767,77 @@ body[data-theme="light"] .tarot-card__cta{
 }
 
 .tap-hint{
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   text-align: center;
   color: rgba(147,160,181,0.78);
-  font-size: .84rem;
+  font-size: .88rem;
 }
 
 .saved-shortcut{
-  margin: 16px auto 0;
-  width: min(100%, 420px);
-  min-height: 56px;
-  padding: 0 18px;
-  border-radius: 18px;
-  border: 1px solid rgba(203,215,255,0.1);
-  background:
-    radial-gradient(circle at 85% 50%, rgba(201,176,122,0.05), transparent 22%),
-    linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
-  color: var(--text);
+  margin: 12px auto 0;
+  width: fit-content;
+  min-height: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--button-bg);
+  color: var(--muted);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: center;
+  gap: 10px;
   box-shadow: none;
+  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .08s ease;
+}
+
+.saved-shortcut:hover,
+.saved-shortcut:active{
+  background: var(--button-hover);
+}
+
+.saved-shortcut:hover{
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.saved-shortcut:focus{
+  outline: none;
+  color: var(--text);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(201,176,122,.14);
+}
+
+.saved-shortcut:active{
+  transform: translateY(1px);
+}
+
+.saved-shortcut__main,
+.saved-shortcut__side{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.saved-shortcut__badge{
+  min-width: 24px;
+  text-align: center;
 }
 
 .saved-shortcut__label{
-  font-size: .84rem;
-  color: rgba(147,160,181,0.78);
+  font-size: .82rem;
+  color: inherit;
+}
+
+.saved-shortcut__arrow{
+  opacity: .5;
+  font-size: 1rem;
+}
+
+.saved-shortcut .saved-panel__count{
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  font-size: .82rem;
 }
 
 
@@ -817,6 +942,11 @@ body[data-theme="light"] .tarot-card__cta{
   width: 100%;
   max-width: 170px;
   margin: 0 auto;
+}
+
+@keyframes tooltipFloat{
+  0%, 100%{ transform: translateY(0); opacity: .96; }
+  50%{ transform: translateY(3px); opacity: 1; }
 }
 
 .deck-gallery__card .tarot-card__face--back{
@@ -988,8 +1118,8 @@ body[data-theme="light"] .tarot-card__cta{
   opacity: .58;
   font-size: .8rem;
   border-top: 1px solid rgba(203,215,255,0.06);
-  margin-top: 34px;
-  padding-top: 16px;
+  margin-top: clamp(12px, 2.4vh, 34px);
+  padding-top: clamp(10px, 1.8vh, 16px);
   text-align: center;
   color: var(--muted);
 }
@@ -1030,7 +1160,7 @@ body[data-theme="light"] .season-badge{
 
 @media (max-width: 640px){
   .container{
-    padding: 16px 16px 18px;
+    padding: 16px 14px 18px;
   }
 
   .header-row{
@@ -1054,9 +1184,15 @@ body[data-theme="light"] .season-badge{
   }
 
   .card-shell{
-    width: min(100%, 340px);
-    padding: 12px;
+    width: min(100%, 350px, calc((100dvh - 210px) * 0.625));
+    padding: 10px;
     border-radius: 28px;
+  }
+
+  .deck-hint{
+    margin-top: 14px;
+    padding: 10px 16px;
+    font-size: .9rem;
   }
 
   .tarot-card__content{
@@ -1114,6 +1250,7 @@ body[data-theme="light"] .season-badge{
 
   .saved-shortcut{
     margin-top: 12px;
+    padding: 10px 16px;
   }
 
   .deck-gallery{
@@ -1127,11 +1264,11 @@ body[data-theme="light"] .season-badge{
   }
 
   .deck-gallery__card-shell{
-    max-width: 220px;
+    max-width: 260px;
   }
 
   .deck-gallery__card{
-    max-width: 152px;
+    max-width: 180px;
   }
 
   .info-card{
@@ -1145,11 +1282,25 @@ body[data-theme="light"] .season-badge{
 
   .icon-actions{
     justify-content: center;
+    gap: 8px;
+  }
+
+  .icon-btn{
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 999px;
   }
 
   .share-hint{
     margin-top: 10px;
     font-size: .84rem;
+  }
+
+  .tap-hint{
+    margin-bottom: 14px;
+    font-size: .9rem;
   }
 
   .saved-item{
@@ -1168,7 +1319,7 @@ body[data-theme="light"] .season-badge{
   .site-menu{
     top: 10px;
     right: 10px;
-    width: min(260px, calc(100vw - 20px));
+    width: min(300px, calc(100vw - 20px));
   }
 
   .save-chip{
@@ -1187,9 +1338,13 @@ body[data-theme="light"] .season-badge{
   }
 
   .saved-shortcut{
-    min-height: 52px;
-    padding: 0 14px;
-    border-radius: 16px;
+    padding: 10px 14px;
+  }
+
+  .menu-tooltip{
+    right: -4px;
+    top: calc(100% + 10px);
+    font-size: .76rem;
   }
 
   .magic-burst.is-active .magic-burst__particle:nth-child(1){ --dx: -58px; --dy: -46px; }
@@ -1198,6 +1353,143 @@ body[data-theme="light"] .season-badge{
   .magic-burst.is-active .magic-burst__particle:nth-child(4){ --dx: 58px; --dy: 40px; }
   .magic-burst.is-active .magic-burst__particle:nth-child(5){ --dx: 0px; --dy: 66px; }
   .magic-burst.is-active .magic-burst__particle:nth-child(6){ --dx: -62px; --dy: 34px; }
+}
+
+@media (max-height: 860px){
+  .container{
+    padding-top: 18px;
+    padding-bottom: 14px;
+  }
+
+  .site-header h1{
+    font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+  }
+
+  .theme-toggle{
+    width: 40px;
+    height: 40px;
+  }
+
+  .tarot-card__content{
+    padding: 22px 18px;
+    gap: 10px;
+  }
+
+  .fortune-text{
+    font-size: clamp(1.08rem, 2.4vh, 1.55rem);
+  }
+
+  .tap-hint{
+    margin-bottom: 8px;
+    font-size: .82rem;
+  }
+
+  .icon-btn{
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+  }
+
+  .icon-btn svg{
+    width: 18px;
+    height: 18px;
+  }
+
+  .deck-hint,
+  .saved-shortcut{
+    margin-top: 8px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .saved-shortcut .saved-panel__count{
+    min-width: 26px;
+    height: 26px;
+  }
+
+  .site-footer{
+    display: none;
+  }
+}
+
+@media (max-width: 640px) and (max-height: 860px){
+  .container{
+    padding-top: 12px;
+    padding-bottom: 10px;
+  }
+
+  .site-header h1{
+    font-size: 1.34rem;
+  }
+
+  .header-row{
+    gap: 10px;
+  }
+
+  .card-stage{
+    margin-top: 4px;
+  }
+
+  .card-shell{
+    width: min(100%, 300px, calc((100dvh - 180px) * 0.625));
+    padding: 8px;
+  }
+
+  .tarot-card__content{
+    padding: 16px 14px;
+    gap: 8px;
+  }
+
+  .tarot-card__ornament{
+    inset: 10px;
+  }
+
+  .tarot-card__ornament--inner{
+    inset: 20px;
+  }
+
+  .tarot-card__sigil-layer{
+    inset: 34px;
+  }
+
+  .fortune-text{
+    max-width: 13ch;
+    font-size: 1rem;
+    line-height: 1.32;
+  }
+
+  .action-row{
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+
+  .icon-actions{
+    gap: 8px;
+  }
+
+  .icon-btn{
+    min-width: 38px;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+  }
+
+  .deck-hint,
+  .saved-shortcut{
+    margin-top: 6px;
+    padding: 7px 12px;
+    font-size: .8rem;
+  }
+
+  .saved-shortcut .saved-panel__count{
+    min-width: 24px;
+    height: 24px;
+    font-size: .76rem;
+  }
+
+  .site-footer{
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce){

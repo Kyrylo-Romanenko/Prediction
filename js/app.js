@@ -17,6 +17,7 @@ import { loadTheme, toggleTheme } from "./ui/theme.js";
 const CARD_REVEAL_MS = 900;
 const CARD_HALF_SPIN_MS = 560;
 const DEFAULT_FORTUNE_TEXT = "Торкніться карти, щоб відкрити передбачення.";
+const MENU_TOOLTIP_STORAGE_KEY = "prediction.menuTooltipSeen";
 
 function getElements() {
   const tarotCardEl = document.getElementById("tarot-card");
@@ -35,8 +36,12 @@ function getElements() {
     tarotCardBackEl: tarotCardEl?.querySelector(".tarot-card__face--back"),
     tarotCardBackIconsEl: document.getElementById("tarot-card-back-icons"),
     tarotCardBackLabelEl: document.getElementById("tarot-card-back-label"),
+    deckHintBtn: document.getElementById("deck-hint"),
+    deckHintBadgeEl: document.getElementById("deck-hint-badge"),
+    deckHintNameEl: document.getElementById("deck-hint-name"),
     magicBurstEl: document.getElementById("magic-burst"),
     menuToggleBtn: document.getElementById("menu-toggle"),
+    menuTooltipEl: document.getElementById("menu-tooltip"),
     menuCloseBtn: document.getElementById("menu-close"),
     menuBackdropEl: document.getElementById("menu-backdrop"),
     siteMenuEl: document.getElementById("site-menu"),
@@ -99,8 +104,23 @@ function syncDeckGallerySelection(elements, state) {
   });
 }
 
+function syncDeckHint(elements, deck) {
+  if (elements.deckHintBadgeEl) {
+    elements.deckHintBadgeEl.textContent = deck.badge || "✦";
+  }
+
+  if (elements.deckHintNameEl) {
+    elements.deckHintNameEl.textContent = deck.name || "Інша колода";
+  }
+
+  if (elements.deckHintBtn) {
+    elements.deckHintBtn.setAttribute("aria-label", `Відкрити тематичні колоди. Активна колода: ${deck.name || "Інша колода"}`);
+  }
+}
+
 function applyDeckAppearance(elements, badgeEl, state, deck) {
   applyBadge(badgeEl, deck.badge);
+  syncDeckHint(elements, deck);
   applyDeckBackBackground(elements.tarotCardBackEl, deck.backDesign?.background);
   renderBackDesign(elements.tarotCardBackIconsEl, elements.tarotCardBackEl, deck.backDesign);
 
@@ -177,12 +197,49 @@ function openMenu(elements) {
   elements.siteMenuEl?.removeAttribute("hidden");
   elements.menuBackdropEl?.removeAttribute("hidden");
   elements.menuToggleBtn?.setAttribute("aria-expanded", "true");
+  hideMenuTooltip(elements);
 }
 
 function closeMenu(elements) {
   elements.siteMenuEl?.setAttribute("hidden", "");
   elements.menuBackdropEl?.setAttribute("hidden", "");
   elements.menuToggleBtn?.setAttribute("aria-expanded", "false");
+}
+
+function hideMenuTooltip(elements) {
+  if (!elements.menuTooltipEl) {
+    return;
+  }
+
+  elements.menuTooltipEl.setAttribute("hidden", "");
+}
+
+function maybeShowMenuTooltip(elements) {
+  if (!elements.menuTooltipEl) {
+    return;
+  }
+
+  const isNarrowScreen = window.matchMedia?.("(max-width: 640px)")?.matches ?? false;
+  if (!isNarrowScreen) {
+    hideMenuTooltip(elements);
+    return;
+  }
+
+  try {
+    if (window.localStorage.getItem(MENU_TOOLTIP_STORAGE_KEY) === "1") {
+      return;
+    }
+  } catch {
+    return;
+  }
+
+  elements.menuTooltipEl.removeAttribute("hidden");
+  window.setTimeout(() => {
+    hideMenuTooltip(elements);
+    try {
+      window.localStorage.setItem(MENU_TOOLTIP_STORAGE_KEY, "1");
+    } catch {}
+  }, 4800);
 }
 
 function setActiveView(elements, viewName) {
@@ -680,6 +737,7 @@ export function bootstrapApp() {
   setActiveView(elements, "main");
   updateSaveButtonState(elements, state);
   bindEvents(elements, state, badgeEl);
+  maybeShowMenuTooltip(elements);
 
   loadCurrentDeckFortunes(state)
     .then(({ deck }) => {

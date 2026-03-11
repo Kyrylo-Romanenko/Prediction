@@ -85,16 +85,10 @@
 
 ## Запуск локально
 
-Потрібен простий HTTP-сервер, бо `fetch` не працює через `file://`.
-
-```bash
-python -m http.server 8080
-```
-
-Після цього відкрий:
+Локально достатньо просто відкрити `index.html` у браузері.
 
 ```text
-http://localhost:8080
+index.html
 ```
 
 ## Production URL
