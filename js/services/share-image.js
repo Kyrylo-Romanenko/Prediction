@@ -37,14 +37,54 @@ function wrapText(ctx, text, maxWidth) {
   return lines;
 }
 
-export async function buildFortuneImageFile(text) {
+function fitTextBlock(ctx, text, maxWidth, initialFontSize, minFontSize) {
+  let fontSize = initialFontSize;
+  let lines = [];
+
+  while (fontSize >= minFontSize) {
+    ctx.font = `700 ${fontSize}px Georgia, "Times New Roman", serif`;
+    lines = wrapText(ctx, text, maxWidth);
+    if (lines.length <= 5) {
+      break;
+    }
+    fontSize -= 4;
+  }
+
+  return { fontSize, lines };
+}
+
+function drawStar(ctx, x, y, radius, color, alpha = 1) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(radius, radius);
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  for (let i = 0; i < 8; i += 1) {
+    const angle = (Math.PI / 4) * i;
+    const outer = i % 2 === 0 ? 1 : 0.42;
+    const px = Math.cos(angle) * outer;
+    const py = Math.sin(angle) * outer;
+    if (i === 0) {
+      ctx.moveTo(px, py);
+    } else {
+      ctx.lineTo(px, py);
+    }
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+export async function buildFortuneImageFile(options) {
+  const { text, deckTitle = "Fortune", badge = "" } = options || {};
   if (!text) {
     return null;
   }
 
   const canvas = document.createElement("canvas");
-  canvas.width = 760;
-  canvas.height = 1060;
+  canvas.width = 1520;
+  canvas.height = 2120;
   const ctx = canvas.getContext("2d");
   if (!ctx) {
     return null;
@@ -61,6 +101,17 @@ export async function buildFortuneImageFile(text) {
   halo.addColorStop(1, "rgba(201,176,122,0)");
   ctx.fillStyle = halo;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const topAura = ctx.createRadialGradient(canvas.width / 2, 280, 0, canvas.width / 2, 280, 520);
+  topAura.addColorStop(0, "rgba(79,101,174,0.18)");
+  topAura.addColorStop(1, "rgba(79,101,174,0)");
+  ctx.fillStyle = topAura;
+  ctx.fillRect(0, 0, canvas.width, 720);
+
+  drawStar(ctx, 240, 220, 16, "#C9B07A", 0.5);
+  drawStar(ctx, 1280, 300, 11, "#EDF1F7", 0.4);
+  drawStar(ctx, 1180, 1700, 9, "#C9B07A", 0.35);
+  drawStar(ctx, 320, 1820, 13, "#EDF1F7", 0.25);
 
   const cardX = 0;
   const cardY = 0;
@@ -97,23 +148,46 @@ export async function buildFortuneImageFile(text) {
   ctx.fillStyle = innerGlow;
   ctx.fillRect(cardX + 70, cardY + 140, cardWidth - 140, cardHeight - 280);
 
+  drawRoundedRect(ctx, cardX + 510, cardY + 180, 500, 74, 37);
+  ctx.fillStyle = "rgba(14,18,27,0.72)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(201,176,122,0.24)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
   ctx.fillStyle = "#C9B07A";
-  ctx.font = '600 24px Georgia, "Times New Roman", serif';
+  ctx.font = '600 34px Georgia, "Times New Roman", serif';
   ctx.textAlign = "center";
-  ctx.fillText("MYSTIC", canvas.width / 2, cardY + 250);
+  ctx.fillText(deckTitle.toUpperCase(), canvas.width / 2, cardY + 228);
+
+  if (badge) {
+    ctx.fillStyle = "rgba(237,241,247,0.92)";
+    ctx.font = '400 42px Georgia, "Times New Roman", serif';
+    ctx.fillText(badge, canvas.width / 2, cardY + 328);
+  }
 
   ctx.fillStyle = "#EDF1F7";
-  ctx.font = '700 28px Georgia, "Times New Roman", serif';
-  const lines = wrapText(ctx, text, 330);
-  const lineHeight = 42;
-  const startY = cardY + 520 - ((lines.length - 1) * lineHeight) / 2;
+  const { fontSize, lines } = fitTextBlock(ctx, text, 760, 68, 44);
+  ctx.font = `700 ${fontSize}px Georgia, "Times New Roman", serif`;
+  const lineHeight = Math.round(fontSize * 1.45);
+  const startY = cardY + 1030 - ((lines.length - 1) * lineHeight) / 2;
+  ctx.shadowColor = "rgba(0,0,0,0.28)";
+  ctx.shadowBlur = 18;
   lines.forEach((line, index) => {
     ctx.fillText(line, canvas.width / 2, startY + index * lineHeight);
   });
+  ctx.shadowBlur = 0;
 
   ctx.fillStyle = "rgba(147,160,181,0.95)";
-  ctx.font = '400 20px Georgia, "Times New Roman", serif';
-  ctx.fillText("Передбачення ✦", canvas.width / 2, cardY + cardHeight - 78);
+  ctx.font = '400 36px Georgia, "Times New Roman", serif';
+  ctx.fillText("Передбачення ✦", canvas.width / 2, cardY + cardHeight - 152);
+
+  ctx.strokeStyle = "rgba(201,176,122,0.18)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(cardX + 320, cardY + cardHeight - 118);
+  ctx.lineTo(cardX + cardWidth - 320, cardY + cardHeight - 118);
+  ctx.stroke();
 
   const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
   if (!blob) {

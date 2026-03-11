@@ -65,6 +65,7 @@ function createBadge(cardShellEl) {
 function createAppState() {
   return {
     currentFortune: "",
+    currentDeck: null,
     currentDeckId: null,
     selectedDeckId: null,
     savedFortunes: [],
@@ -107,6 +108,7 @@ function applyDeckAppearance(elements, badgeEl, state, deck) {
     elements.tarotCardBackLabelEl.textContent = deck.title || "Fortune";
   }
 
+  state.currentDeck = deck;
   state.currentDeckId = deck.id;
   syncDeckGallerySelection(elements, state);
 }
@@ -338,7 +340,11 @@ async function downloadImage(elements, state, providedFile = null, announce = tr
     return;
   }
 
-  const imageFile = providedFile || await buildFortuneImageFile(state.currentFortune);
+  const imageFile = providedFile || await buildFortuneImageFile({
+    text: state.currentFortune,
+    deckTitle: state.currentDeck?.title,
+    badge: state.currentDeck?.badge
+  });
   if (!imageFile) {
     updateShareHint(elements, "Не вдалося згенерувати PNG-картку.");
     return;
@@ -363,7 +369,11 @@ async function shareNative(elements, state) {
     return;
   }
 
-  const imageFile = await buildFortuneImageFile(state.currentFortune);
+  const imageFile = await buildFortuneImageFile({
+    text: state.currentFortune,
+    deckTitle: state.currentDeck?.title,
+    badge: state.currentDeck?.badge
+  });
   const text = state.currentFortune;
   const url = window.location.href;
 
