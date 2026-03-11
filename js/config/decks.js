@@ -23,17 +23,38 @@ export function getDeckById(deckId) {
 }
 
 export function resolveActiveDeck(today = new Date()) {
-  const timedDeck = Object.values(DECK_CATALOG).find((deck) => {
-    if (deck.id === DEFAULT_DECK_ID) {
-      return false;
-    }
+  const timedDeck = Object.values(DECK_CATALOG)
+    .filter((deck) => {
+      if (deck.id === DEFAULT_DECK_ID) {
+        return false;
+      }
 
-    return isWithinMonthDayRange(today, deck.activeFrom, deck.activeTo);
-  });
+      return isWithinMonthDayRange(today, deck.activeFrom, deck.activeTo);
+    })
+    .sort((left, right) => {
+      const priorityDiff = (right.priority || 0) - (left.priority || 0);
+
+      if (priorityDiff !== 0) {
+        return priorityDiff;
+      }
+
+      return 0;
+    })[0];
 
   return timedDeck || getDeckById(DEFAULT_DECK_ID);
 }
 
 export function listGalleryDecks() {
-  return Object.values(DECK_CATALOG).filter((deck) => deck.showInGallery !== false);
+  return Object.values(DECK_CATALOG)
+    .filter((deck) => deck.showInGallery !== false)
+    .sort((left, right) => {
+      const leftOrder = left.galleryOrder ?? Number.MAX_SAFE_INTEGER;
+      const rightOrder = right.galleryOrder ?? Number.MAX_SAFE_INTEGER;
+
+      if (leftOrder !== rightOrder) {
+        return leftOrder - rightOrder;
+      }
+
+      return left.name.localeCompare(right.name, "uk");
+    });
 }

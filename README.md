@@ -119,6 +119,8 @@ https://kyrylo-romanenko.github.io/Prediction/
 - назву в галереї
 - назву на рубашці
 - короткий опис
+- `priority` для конфлікту кількох календарних колод
+- `galleryOrder` для порядку в галереї
 - прапорець показу в галереї
 - діапазон дат автопідключення
 - дизайн рубашки
@@ -155,6 +157,8 @@ halloween: buildDeck({
   name: "Halloween",
   title: "Haunt",
   description: "Трохи темна, трохи іронічна колода для кінця жовтня.",
+  priority: 80,
+  galleryOrder: 40,
   showInGallery: true,
   activeFrom: { month: 9, day: 25 },
   activeTo: { month: 9, day: 31 },
@@ -212,6 +216,12 @@ backDesign: {
 ◈ ◇ ◆
 ```
 
+Зручно шукати і копіювати символи тут:
+
+```text
+https://copychar.cc/symbols/
+```
+
 ## Автоматичне підключення за датою
 
 Якщо колода має автоматично ставати активною замість дефолтної, достатньо задати:
@@ -221,12 +231,19 @@ activeFrom: { month: 9, day: 25 },
 activeTo: { month: 9, day: 31 }
 ```
 
+Якщо на одну дату підходить кілька колод, перемагає колода з більшим `priority`:
+
+```js
+priority: 100
+```
+
 Важливо:
 - місяці в JavaScript нумеруються з нуля
 - `0` — січень
 - `9` — жовтень
 - `11` — грудень
 - якщо `activeFrom` і `activeTo` порожні, колода не активується автоматично
+- якщо `priority` не заданий, використовується `0`
 
 ## Галерея тематичних колод
 
@@ -247,6 +264,17 @@ showInGallery: false
 Це корисно для:
 - одноденних святкових колод
 - специфічних колод, які не треба відкривати вручну
+
+Порядок карток у галереї керується окремо:
+
+```js
+galleryOrder: 40
+```
+
+Важливо:
+- менше число `galleryOrder` = вище в списку
+- якщо `galleryOrder` не заданий, колода піде після впорядкованих вручну
+- `priority` не впливає на порядок у галереї
 
 ## Шерінг і превʼю
 
@@ -284,6 +312,8 @@ showInGallery: false
 - name: назва колоди українською (1-2 слова)
 - title: одне коротке слово для рубашки карти (укр або англ)
 - description: 1 речення — атмосферний короткий опис колоди
+- priority: число для пріоритету при перетині кількох календарних колод
+- galleryOrder: число для позиції в галереї
 - showInGallery: true
 - activeFrom / activeTo: логічний діапазон дат для теми
   (місяці в JS з нуля: 0=січень, 11=грудень)
@@ -300,6 +330,8 @@ badge: ...
 name: ...
 title: ...
 description: ...
+priority: N
+galleryOrder: N
 showInGallery: ...
 activeFrom: { month: N, day: N }
 activeTo: { month: N, day: N }
@@ -341,6 +373,8 @@ backDesign: { layout: "...", icons: [...], background: { dark: "...", light: "..
   name: "...",
   title: "...",
   description: "...",
+  priority: N,
+  galleryOrder: N,
   showInGallery: true/false,
   activeFrom: { month: N, day: N },
   activeTo: { month: N, day: N },

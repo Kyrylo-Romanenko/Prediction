@@ -387,7 +387,7 @@ body[data-theme="light"] .tarot-card__face--back{
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, 144px);
+  transform: translate(-50%, 112px);
   padding: 8px 22px;
   border-radius: 999px;
   background: transparent;
@@ -1038,7 +1038,7 @@ body[data-theme="light"] .season-badge{
   }
 
   .tarot-card__cta{
-    transform: translate(-50%, 96px);
+    transform: translate(-50%, 71px);
     font-size: .94rem;
     padding: 7px 12px;
   }
