@@ -276,6 +276,34 @@ galleryOrder: 40
 - якщо `galleryOrder` не заданий, колода піде після впорядкованих вручну
 - `priority` не впливає на порядок у галереї
 
+Фактичне правило сортування:
+- спочатку всі колоди з меншим `galleryOrder`
+- якщо `galleryOrder` однаковий, далі сортування за `name`
+- якщо `galleryOrder` не заданий, використовується кінець списку
+
+Приклад:
+
+```js
+default: buildDeck({
+  galleryOrder: 0
+}),
+winter: buildDeck({
+  galleryOrder: 20
+}),
+xmas: buildDeck({
+  galleryOrder: 30
+}),
+hiddenHoliday: buildDeck({
+  showInGallery: false
+})
+```
+
+Результат у галереї:
+- `default`
+- `winter`
+- `xmas`
+- `hiddenHoliday` не показується взагалі
+
 ## Шерінг і превʼю
 
 Для соцмереж сайт використовує:

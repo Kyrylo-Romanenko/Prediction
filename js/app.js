@@ -108,9 +108,37 @@ function applyDeckAppearance(elements, badgeEl, state, deck) {
     elements.tarotCardBackLabelEl.textContent = deck.title || "Fortune";
   }
 
+  elements.tarotCardEl?.classList.toggle("tarot-card--emoji-oracle", deck.id === "emojiOracle");
+  elements.fortuneEl?.classList.toggle("fortune-text--emoji-oracle", deck.id === "emojiOracle");
+
   state.currentDeck = deck;
   state.currentDeckId = deck.id;
   syncDeckGallerySelection(elements, state);
+}
+
+function escapeHtml(value) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function renderFortuneText(elements, state, text) {
+  if (!elements.fortuneEl) {
+    return;
+  }
+
+  if (state.currentDeck?.id === "emojiOracle") {
+    const [topLine = "", emojiLine = "", bottomLine = ""] = text.split("\n");
+    elements.fortuneEl.innerHTML = `
+      <span class="fortune-line fortune-line--intro">${escapeHtml(topLine)}</span>
+      <span class="fortune-line fortune-line--emoji">${escapeHtml(emojiLine)}</span>
+      <span class="fortune-line fortune-line--outro">${escapeHtml(bottomLine)}</span>
+    `;
+    return;
+  }
+
+  elements.fortuneEl.textContent = text;
 }
 
 function setShareEnabled(elements, enabled) {
@@ -343,6 +371,7 @@ async function downloadImage(elements, state, providedFile = null, announce = tr
   const imageFile = providedFile || await buildFortuneImageFile({
     text: state.currentFortune,
     deckTitle: state.currentDeck?.title,
+    deckId: state.currentDeck?.id,
     badge: state.currentDeck?.badge
   });
   if (!imageFile) {
@@ -372,6 +401,7 @@ async function shareNative(elements, state) {
   const imageFile = await buildFortuneImageFile({
     text: state.currentFortune,
     deckTitle: state.currentDeck?.title,
+    deckId: state.currentDeck?.id,
     badge: state.currentDeck?.badge
   });
   const text = state.currentFortune;
@@ -465,12 +495,12 @@ async function showFortune(elements, state, badgeEl) {
     const { deck, fortunes } = await loadCurrentDeckFortunes(state);
     applyDeckAppearance(elements, badgeEl, state, deck);
 
-    const text = pickRandomFortune(fortunes) || "Немає доступних передбачень.";
+    const text = pickRandomFortune(fortunes, deck) || "Немає доступних передбачень.";
     const canShare = Boolean(text) && !text.startsWith("Немає доступних");
 
     if (!state.isRevealed) {
       state.currentFortune = text;
-      elements.fortuneEl.textContent = text;
+      renderFortuneText(elements, state, text);
       await rotateCardTo(elements, state, 180, CARD_REVEAL_MS);
       triggerHaptic();
       triggerMagicBurst(elements);
@@ -485,7 +515,7 @@ async function showFortune(elements, state, badgeEl) {
 
     await rotateCardTo(elements, state, state.cardRotation + 180, CARD_HALF_SPIN_MS);
     state.currentFortune = text;
-    elements.fortuneEl.textContent = text;
+    renderFortuneText(elements, state, text);
     triggerHaptic();
     triggerMagicBurst(elements);
     await rotateCardTo(elements, state, state.cardRotation + 180, CARD_HALF_SPIN_MS);
@@ -580,6 +610,21 @@ async function selectDeck(elements, state, badgeEl, deckId) {
   }
 }
 
+async function resetToActiveDeck(elements, state, badgeEl) {
+  state.selectedDeckId = null;
+  resetFortuneView(elements, state);
+  setActiveView(elements, "main");
+  closeMenu(elements);
+
+  try {
+    const deck = await refreshDeckAppearance(elements, state, badgeEl);
+    updateShareHint(elements, `Повернуто активну колоду «${deck.name}». Торкнись карти, щоб відкрити передбачення.`);
+  } catch (error) {
+    console.error("Помилка скидання до активної колоди:", error);
+    updateShareHint(elements, "Не вдалося повернути активну колоду. Спробуйте пізніше.");
+  }
+}
+
 function bindEvents(elements, state, badgeEl) {
   elements.tarotCardEl?.addEventListener("click", (event) => handleCardActivate(elements, state, badgeEl, event));
   elements.tarotCardEl?.addEventListener("keydown", (event) => handleCardActivate(elements, state, badgeEl, event));
@@ -598,8 +643,7 @@ function bindEvents(elements, state, badgeEl) {
   elements.menuCloseBtn?.addEventListener("click", () => closeMenu(elements));
   elements.menuBackdropEl?.addEventListener("click", () => closeMenu(elements));
   elements.homeLinkBtn?.addEventListener("click", () => {
-    setActiveView(elements, "main");
-    closeMenu(elements);
+    resetToActiveDeck(elements, state, badgeEl);
   });
   elements.savedShortcutBtn?.addEventListener("click", () => setActiveView(elements, "saved"));
   elements.viewButtons.forEach((button) => {

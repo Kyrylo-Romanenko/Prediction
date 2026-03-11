@@ -506,7 +506,41 @@ body[data-theme="light"] .tarot-card__cta{
   max-width: 16ch;
   font-size: clamp(1.35rem, 3.2vw, 1.9rem);
   line-height: 1.45;
+  white-space: pre-line;
   text-wrap: balance;
+}
+
+.fortune-text--emoji-oracle{
+  max-width: 17ch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-wrap: unset;
+}
+
+.fortune-line{
+  display: block;
+}
+
+.fortune-line--intro,
+.fortune-line--outro{
+  max-width: 18ch;
+  font-size: .88rem;
+  line-height: 1.35;
+  letter-spacing: 0.03em;
+  opacity: .88;
+}
+
+.fortune-line--emoji{
+  max-width: 9ch;
+  font-size: clamp(1.8rem, 5.2vw, 2.5rem);
+  line-height: 1.24;
+  letter-spacing: 0.06em;
+  white-space: normal;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  filter: drop-shadow(0 0 18px rgba(201,176,122,0.18));
 }
 
 .fortune-text.loading{
@@ -814,6 +848,11 @@ body[data-theme="light"] .tarot-card__cta{
   color: var(--muted);
   font-size: .84rem;
   line-height: 1.45;
+  min-height: calc(1.45em * 2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .info-card{
@@ -961,20 +1000,21 @@ body[data-theme="light"] .tarot-card__cta{
 
 .season-badge{
   position: absolute;
-  top: 18px;
-  left: 18px;
+  top: 34px;
+  left: 34px;
   z-index: 3;
   display: none;
   align-items: center;
-  gap: 8px;
-  font-size: .76rem;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
   color: var(--text);
   background: rgba(10, 12, 18, 0.62);
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 7px 10px;
   backdrop-filter: blur(12px);
 }
 
@@ -1049,6 +1089,23 @@ body[data-theme="light"] .season-badge{
     line-height: 1.38;
   }
 
+  .fortune-text--emoji-oracle{
+    max-width: 15ch;
+    gap: 8px;
+  }
+
+  .fortune-line--intro,
+  .fortune-line--outro{
+    font-size: .76rem;
+    line-height: 1.3;
+  }
+
+  .fortune-line--emoji{
+    max-width: 8ch;
+    font-size: 1.52rem;
+    letter-spacing: 0.05em;
+  }
+
   .saved-shortcut{
     margin-top: 12px;
   }
@@ -1113,6 +1170,14 @@ body[data-theme="light"] .season-badge{
     right: 10px;
     width: 36px;
     height: 36px;
+  }
+
+  .season-badge{
+    top: 22px;
+    left: 22px;
+    width: 36px;
+    height: 36px;
+    font-size: .94rem;
   }
 
   .saved-shortcut{

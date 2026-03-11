@@ -1,10 +1,19 @@
 import { getDeckById, resolveActiveDeck } from "../config/decks.js";
+import { generateEmojiOracleFortune } from "./emoji-oracle.js";
 
 const fortunesCache = new Map();
+
+const deckGenerators = {
+  "emoji-oracle": generateEmojiOracleFortune
+};
 
 export async function loadFortunesForDeck(deck) {
   if (!deck?.id) {
     throw new Error("Deck is required");
+  }
+
+  if (deck.generator) {
+    return { deck, fortunes: [] };
   }
 
   if (fortunesCache.has(deck.id)) {
@@ -33,7 +42,12 @@ export async function loadActiveFortunes(today = new Date()) {
   return loadFortunesForDeck(resolveActiveDeck(today));
 }
 
-export function pickRandomFortune(fortunes) {
+export function pickRandomFortune(fortunes, deck = null) {
+  const generator = deck?.generator ? deckGenerators[deck.generator] : null;
+  if (generator) {
+    return generator();
+  }
+
   if (!Array.isArray(fortunes) || fortunes.length === 0) {
     return null;
   }
