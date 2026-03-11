@@ -19,7 +19,7 @@ function buildDeck({
     showInGallery,
     activeFrom,
     activeTo,
-    dataUrl: new URL(`../data/${file}`, window.location.href).toString(),
+    dataUrl: new URL(`../../data/${file}`, import.meta.url).toString(),
     backDesign
   };
 }
