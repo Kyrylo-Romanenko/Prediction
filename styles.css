@@ -841,6 +841,9 @@ body[data-theme="light"] .tarot-card__cta{
 .deck-gallery__name{
   font-size: 1rem;
   color: var(--text);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .deck-gallery__description{
@@ -848,6 +851,9 @@ body[data-theme="light"] .tarot-card__cta{
   color: var(--muted);
   font-size: .84rem;
   line-height: 1.45;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   min-height: calc(1.45em * 2);
   display: -webkit-box;
   -webkit-line-clamp: 2;
