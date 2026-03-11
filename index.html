@@ -29,7 +29,7 @@
     <div class="container">
       <div class="header-row">
         <h1>
-          <button id="home-link" type="button" class="home-link" aria-label="Перейти до передбачень">🔮 Передбачення</button>
+          <button id="home-link" type="button" class="home-link" aria-label="Перейти до передбачень">🎴 Передбачення</button>
         </h1>
         <div class="header-actions">
           <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Перемкнути тему" title="Перемкнути тему">
@@ -113,14 +113,21 @@
       </section>
 
       <button type="button" id="deck-hint" class="deck-hint" data-view-target="decks" aria-label="Відкрити тематичні колоди">
-        <span class="deck-hint__badge" id="deck-hint-badge">🔮</span>
-        <span class="deck-hint__label" id="deck-hint-name">Містика і знаки</span>
-        <span class="deck-hint__arrow" aria-hidden="true">›</span>
+        <span class="deck-hint__badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="3" width="14" height="18" rx="2.5" ry="2.5"></rect>
+            <path d="M8 7h2M14 17h2M12 10.2l1.6 2.3L12 14.8l-1.6-2.3Z"></path>
+          </svg>
+        </span>
+        <span class="deck-hint__label">Тематичні колоди</span>
+        <span class="saved-shortcut__arrow" aria-hidden="true">›</span>
       </button>
 
       <button id="saved-shortcut" type="button" class="saved-shortcut" aria-label="Відкрити збережені передбачення">
         <span class="saved-shortcut__main">
-          <span class="saved-shortcut__badge" aria-hidden="true">✦</span>
+          <span class="saved-shortcut__badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Z"></path></svg>
+          </span>
           <span class="saved-shortcut__label">Збережені передбачення</span>
         </span>
         <span class="saved-shortcut__side">

@@ -37,8 +37,6 @@ function getElements() {
     tarotCardBackIconsEl: document.getElementById("tarot-card-back-icons"),
     tarotCardBackLabelEl: document.getElementById("tarot-card-back-label"),
     deckHintBtn: document.getElementById("deck-hint"),
-    deckHintBadgeEl: document.getElementById("deck-hint-badge"),
-    deckHintNameEl: document.getElementById("deck-hint-name"),
     magicBurstEl: document.getElementById("magic-burst"),
     menuToggleBtn: document.getElementById("menu-toggle"),
     menuTooltipEl: document.getElementById("menu-tooltip"),
@@ -104,23 +102,8 @@ function syncDeckGallerySelection(elements, state) {
   });
 }
 
-function syncDeckHint(elements, deck) {
-  if (elements.deckHintBadgeEl) {
-    elements.deckHintBadgeEl.textContent = deck.badge || "✦";
-  }
-
-  if (elements.deckHintNameEl) {
-    elements.deckHintNameEl.textContent = deck.name || "Інша колода";
-  }
-
-  if (elements.deckHintBtn) {
-    elements.deckHintBtn.setAttribute("aria-label", `Відкрити тематичні колоди. Активна колода: ${deck.name || "Інша колода"}`);
-  }
-}
-
 function applyDeckAppearance(elements, badgeEl, state, deck) {
   applyBadge(badgeEl, deck.badge);
-  syncDeckHint(elements, deck);
   applyDeckBackBackground(elements.tarotCardBackEl, deck.backDesign?.background);
   renderBackDesign(elements.tarotCardBackIconsEl, elements.tarotCardBackEl, deck.backDesign);
 
