@@ -8,13 +8,13 @@
   <meta name="description" content="Мінімальний статичний сайт українською: випадкові передбачення на щодень. Жодних серверів — усе клієнтськи." />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="uk_UA" />
-  <meta property="og:title" content="Передбачення ✨" />
+  <meta property="og:title" content="Передбачення" />
   <meta property="og:description" content="Містична мінімалістична карта-передбачення українською мовою." />
   <meta property="og:image" content="./og-preview.svg" />
   <meta property="og:image:type" content="image/svg+xml" />
   <meta property="og:image:alt" content="Передбачення — tarot style preview" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Передбачення ✨" />
+  <meta name="twitter:title" content="Передбачення" />
   <meta name="twitter:description" content="Містична мінімалістична карта-передбачення українською мовою." />
   <meta name="twitter:image" content="./og-preview.svg" />
   <link rel="preload" href="styles.css" as="style" />
@@ -33,7 +33,7 @@
             <span aria-hidden="true">◐</span>
           </button>
           <button id="menu-toggle" type="button" class="theme-toggle" aria-label="Відкрити меню" title="Відкрити меню" aria-expanded="false" aria-controls="site-menu">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v2H4zM4 11h16v2H4zM4 15h16v2H4z"/></svg>
+            <span class="menu-star" aria-hidden="true">✦</span>
           </button>
         </div>
       </div>
@@ -72,6 +72,14 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Z"/></svg>
               </button>
               <div class="tarot-card__halo"></div>
+              <div class="magic-burst" id="magic-burst" aria-hidden="true">
+                <span class="magic-burst__particle"></span>
+                <span class="magic-burst__particle"></span>
+                <span class="magic-burst__particle"></span>
+                <span class="magic-burst__particle"></span>
+                <span class="magic-burst__particle"></span>
+                <span class="magic-burst__particle"></span>
+              </div>
               <div class="tarot-card__content">
                 <div class="tarot-card__eyebrow">Mystic Minimal</div>
                 <p id="fortune-text" class="fortune-text">Торкніться карти, щоб відкрити передбачення.</p>

@@ -48,6 +48,7 @@
   const shareLinkEls = Array.from(document.querySelectorAll("[data-share-target]"));
   const tarotCardEl = document.getElementById("tarot-card");
   const tarotCardInnerEl = tarotCardEl?.querySelector(".tarot-card__inner");
+  const magicBurstEl = document.getElementById("magic-burst");
   const menuToggleBtn = document.getElementById("menu-toggle");
   const menuCloseBtn = document.getElementById("menu-close");
   const menuBackdropEl = document.getElementById("menu-backdrop");
@@ -112,6 +113,22 @@
     if (shareHintEl) {
       shareHintEl.textContent = message;
     }
+  }
+
+  function triggerHaptic(duration = 50) {
+    if (typeof navigator.vibrate === "function") {
+      navigator.vibrate(duration);
+    }
+  }
+
+  function triggerMagicBurst() {
+    if (!magicBurstEl) return;
+    magicBurstEl.classList.remove("is-active");
+    void magicBurstEl.offsetWidth;
+    magicBurstEl.classList.add("is-active");
+    window.setTimeout(() => {
+      magicBurstEl.classList.remove("is-active");
+    }, 700);
   }
 
   function openMenu() {
@@ -359,7 +376,8 @@
         currentFortune = text;
         fortuneEl.textContent = text;
         await rotateCardTo(180, CARD_REVEAL_MS);
-        tarotCardEl?.classList.add("is-front-facing");
+        triggerHaptic();
+        triggerMagicBurst();
         fortuneEl.classList.remove("loading");
         tarotCardEl?.removeAttribute("aria-busy");
         setShareEnabled(canShare);
@@ -370,11 +388,11 @@
       }
 
       await rotateCardTo(cardRotation + 180, CARD_HALF_SPIN_MS);
-      tarotCardEl?.classList.remove("is-front-facing");
       currentFortune = text;
       fortuneEl.textContent = text;
+      triggerHaptic();
+      triggerMagicBurst();
       await rotateCardTo(cardRotation + 180, CARD_HALF_SPIN_MS);
-      tarotCardEl?.classList.add("is-front-facing");
       fortuneEl.classList.remove("loading");
       tarotCardEl?.removeAttribute("aria-busy");
       setShareEnabled(canShare);
