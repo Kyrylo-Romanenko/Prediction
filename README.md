@@ -97,6 +97,18 @@ python -m http.server 8080
 http://localhost:8080
 ```
 
+## Production URL
+
+Правильна адреса GitHub Pages для цього проєкту:
+
+```text
+https://kyrylo-romanenko.github.io/Prediction/
+```
+
+Важливо:
+- не `https://kyrylo-romanenko.github.io/`
+- якщо відкрити корінь домену замість `/Prediction/`, можуть не завантажитися JSON-файли колод
+
 ## Як працюють колоди
 
 Кожна колода описується в `js/config/deck-catalog.js`.

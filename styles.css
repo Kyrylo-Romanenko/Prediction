@@ -835,6 +835,12 @@ body[data-theme="light"] .tarot-card__cta{
   color: var(--muted);
 }
 
+.info-inline-link{
+  color: var(--text);
+  text-decoration-color: rgba(201,176,122,0.38);
+  text-underline-offset: 4px;
+}
+
 .info-links{
   margin-top: 18px;
   display: flex;
