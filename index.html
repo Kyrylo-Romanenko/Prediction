@@ -19,7 +19,7 @@
   <meta name="twitter:image" content="./og-preview.svg" />
   <link rel="preload" href="styles.css" as="style" />
   <link rel="stylesheet" href="styles.css" />
-  <script defer src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </head>
 <body>
   <header class="site-header">
@@ -50,7 +50,9 @@
     </div>
     <nav class="site-menu__nav">
       <button type="button" class="site-menu__link is-active" data-view-target="main">Головна</button>
+      <button type="button" class="site-menu__link" data-view-target="decks">Колоди</button>
       <button type="button" class="site-menu__link" data-view-target="saved">Збережені</button>
+      <button type="button" class="site-menu__link" data-view-target="info">Інформація</button>
     </nav>
   </aside>
 
@@ -64,9 +66,9 @@
             <div class="tarot-card__face tarot-card__face--back" aria-hidden="true">
               <div class="tarot-card__ornament tarot-card__ornament--outer"></div>
               <div class="tarot-card__ornament tarot-card__ornament--inner"></div>
-              <div class="tarot-card__sigil">✦</div>
+              <div id="tarot-card-back-icons" class="tarot-card__sigil-layer" aria-hidden="true"></div>
               <div class="tarot-card__cta">Торкнись карти</div>
-              <p class="tarot-card__label">Fortune</p>
+              <p id="tarot-card-back-label" class="tarot-card__label">Fortune</p>
             </div>
             <div class="tarot-card__face tarot-card__face--front">
               <button id="save-btn" type="button" class="save-chip" disabled aria-label="Зберегти передбачення" title="Зберегти передбачення">
@@ -124,6 +126,33 @@
       </div>
       <ul id="saved-list" class="saved-list" aria-live="polite"></ul>
       <p id="saved-empty" class="saved-empty">Поки що тут порожньо.</p>
+    </section>
+
+    <section id="view-decks" class="view-section decks-view" aria-labelledby="decks-title" hidden>
+      <div class="saved-view__intro decks-view__intro">
+        <h2 id="decks-title">Тематичні колоди</h2>
+        <p>Обери настрій колоди і відкрий окрему добірку передбачень.</p>
+      </div>
+      <div id="deck-gallery" class="deck-gallery" aria-live="polite"></div>
+    </section>
+
+    <section id="view-info" class="view-section info-view" aria-labelledby="info-title" hidden>
+      <div class="saved-view__intro">
+        <h2 id="info-title">Інформація</h2>
+        <p>Коротко про проєкт, його ідею та джерела.</p>
+      </div>
+      <article class="info-card">
+        <p class="info-card__lead">
+          «Передбачення» — це статичний вебпроєкт з містичною атмосферою, тематичними колодами та локальним збереженням карт.
+        </p>
+        <p>
+          Сайт побудований без бекенду: тільки HTML, CSS, JavaScript і JSON-файли з передбаченнями.
+        </p>
+        <div class="info-links">
+          <a class="info-link" href="https://github.com/Kyrylo-Romanenko/Prediction" target="_blank" rel="noreferrer">GitHub Repository</a>
+          <a class="info-link" href="https://github.com/Kyrylo-Romanenko/Prediction/blob/main/README.md" target="_blank" rel="noreferrer">README on GitHub</a>
+        </div>
+      </article>
     </section>
     
     <noscript>
