@@ -37,6 +37,25 @@ export const DECK_CATALOG = {
       background: {}
     }
   }),
+  spring: buildDeck({
+      id: "spring",
+      file: "fortunes_spring.json",
+      badge: "🌸",
+      name: "Весняні передбачення",
+      title: "Весна",
+      description: "Коли земля пахне дощем, а вітер ще не визначився — тепло чи холодно.",
+      showInGallery: true,
+      activeFrom: { month: 2, day: 1 },
+      activeTo: { month: 4, day: 31 },
+      backDesign: {
+        layout: "diagonal",
+        icons: ["✶", "✧", "☼", "✵"],
+        background: {
+          dark: "linear-gradient(135deg, #1f1418 0%, #3d2030 50%, #2a1822 100%)",
+          light: "linear-gradient(135deg, #fff5f7 0%, #fde8ef 40%, #fad4e4 100%)"
+        }
+      }
+    }),
   xmas: buildDeck({
     id: "xmas",
     file: "fortunes_christmas.json",
