@@ -80,7 +80,7 @@ export const DECK_CATALOG = {
       showInGallery: true,
       backDesign: {
         layout: "diagonal",
-        icons: ["❤", "21+", "💦"],
+        icons: ["❤", "21+"],
         background: {
           dark: "linear-gradient(135deg, #2d0a1a 0%, #000000 100%)",
           light: "linear-gradient(135deg, #ff0a4b 0%, #fbc2eb 100%)"
