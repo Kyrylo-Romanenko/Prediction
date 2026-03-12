@@ -989,6 +989,10 @@ body[data-theme="light"] .tarot-card__cta{
   inset: 26px;
 }
 
+.deck-gallery__card .tarot-card__sigil-mark{
+  font-size: calc(var(--sigil-size, 1rem) * 0.68);
+}
+
 .deck-gallery__card .tarot-card__label{
   bottom: 16px;
   font-size: .68rem;
