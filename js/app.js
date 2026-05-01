@@ -12,6 +12,7 @@ import { buildFortuneImageFile } from "./services/share-image.js";
 import { applyDeckBackBackground } from "./ui/deck-appearance.js";
 import { renderBackDesign } from "./ui/back-design.js";
 import { renderDeckGallery } from "./ui/deck-gallery.js";
+import { getNfcAnimationFromUrl, playNfcCardAnimation } from "./ui/nfc-animations.js";
 import { loadTheme, toggleTheme } from "./ui/theme.js";
 
 const CARD_REVEAL_MS = 900;
@@ -75,6 +76,39 @@ function createAppState() {
     isRevealed: false,
     cardRotation: 0
   };
+}
+
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function animateCardRotation(innerEl, fromRotation, toRotation, durationMs) {
+  return new Promise((resolve) => {
+    if (!innerEl) {
+      resolve();
+      return;
+    }
+
+    const startedAt = performance.now();
+    const delta = toRotation - fromRotation;
+
+    const step = () => {
+      const elapsed = performance.now() - startedAt;
+      const progress = Math.min(elapsed / durationMs, 1);
+      const eased = easeOutCubic(progress);
+      const rotation = fromRotation + delta * eased;
+      innerEl.style.transform = `rotateY(${rotation}deg)`;
+
+      if (progress >= 1) {
+        resolve();
+        return;
+      }
+
+      window.setTimeout(step, 16);
+    };
+
+    step();
+  });
 }
 
 function applyBadge(badgeEl, badge) {
@@ -265,38 +299,25 @@ function setActiveView(elements, viewName) {
   });
 }
 
-function waitForTransformTransition(elements) {
-  return new Promise((resolve) => {
-    if (!elements.tarotCardInnerEl) {
-      resolve();
-      return;
-    }
-
-    const handleTransitionEnd = (event) => {
-      if (event.propertyName !== "transform") {
-        return;
-      }
-
-      elements.tarotCardInnerEl.removeEventListener("transitionend", handleTransitionEnd);
-      resolve();
-    };
-
-    elements.tarotCardInnerEl.addEventListener("transitionend", handleTransitionEnd);
-  });
-}
-
 async function rotateCardTo(elements, state, nextRotation, durationMs) {
+  const previousRotation = state.cardRotation;
   state.cardRotation = nextRotation;
 
-  if (elements.tarotCardInnerEl) {
-    elements.tarotCardInnerEl.style.transitionDuration = `${durationMs}ms`;
+  if (!elements.tarotCardInnerEl || !elements.tarotCardEl) {
+    return;
   }
 
-  requestAnimationFrame(() => {
-    elements.tarotCardEl?.style.setProperty("--card-rotation", `${state.cardRotation}deg`);
-  });
-
-  await waitForTransformTransition(elements);
+  const innerEl = elements.tarotCardInnerEl;
+  const cardEl = elements.tarotCardEl;
+  cardEl.style.setProperty("--card-rotation", `${previousRotation}deg`);
+  innerEl.style.transition = "none";
+  innerEl.style.transform = `rotateY(${previousRotation}deg)`;
+  void elements.tarotCardInnerEl.offsetWidth;
+  cardEl.style.setProperty("--card-rotation", `${state.cardRotation}deg`);
+  await animateCardRotation(innerEl, previousRotation, state.cardRotation, durationMs);
+  cardEl.style.setProperty("--card-rotation", `${state.cardRotation}deg`);
+  innerEl.style.transition = "";
+  innerEl.style.transform = "";
 }
 
 function buildShareText(text) {
@@ -576,6 +597,76 @@ async function showFortune(elements, state, badgeEl) {
   }
 }
 
+async function prepareNfcFortune(elements, state, badgeEl) {
+  elements.fortuneEl.classList.add("loading");
+  setShareEnabled(elements, false);
+
+  const { deck, fortunes } = await loadCurrentDeckFortunes(state);
+  applyDeckAppearance(elements, badgeEl, state, deck);
+
+  const text = pickRandomFortune(fortunes, deck) || "Немає доступних передбачень.";
+  const canShare = Boolean(text) && !text.startsWith("Немає доступних");
+
+  state.currentFortune = text;
+  renderFortuneText(elements, state, text);
+  return canShare;
+}
+
+async function runNfcEntry(elements, state, badgeEl, animationId) {
+  document.body.dataset.entry = "nfc";
+  elements.tarotCardEl?.setAttribute("aria-busy", "true");
+  elements.tarotCardEl?.setAttribute("aria-label", "NFC-мітка активована. Карта відкривається автоматично.");
+
+  if (elements.tarotCardEl) {
+    elements.tarotCardEl.tabIndex = -1;
+  }
+
+  if (elements.tarotCardBackEl) {
+    const ctaEl = elements.tarotCardBackEl.querySelector(".tarot-card__cta");
+    if (ctaEl) {
+      ctaEl.textContent = "Мітку активовано";
+    }
+  }
+
+  let canShare = false;
+  updateShareHint(elements, "NFC-мітка активувала колоду. Карта відкриється автоматично.");
+
+  try {
+    await playNfcCardAnimation(elements, animationId, {
+      onSelect: async () => {
+        updateShareHint(elements, "Карта обирає передбачення.");
+        canShare = await prepareNfcFortune(elements, state, badgeEl);
+      }
+    });
+
+    state.cardRotation = 180;
+    state.isRevealed = true;
+    elements.tarotCardEl?.style.setProperty("--card-rotation", "180deg");
+    triggerHaptic();
+    triggerMagicBurst(elements);
+    elements.fortuneEl.classList.remove("loading");
+    elements.tarotCardEl?.removeAttribute("aria-busy");
+    setShareEnabled(elements, canShare);
+    updateSaveButtonState(elements, state);
+    updateShareHint(elements, "Передбачення відкрито з NFC-мітки.");
+  } catch (error) {
+    console.error("Помилка NFC-відкривання передбачення:", error);
+    state.currentFortune = "";
+    elements.fortuneEl.classList.remove("loading");
+    elements.fortuneEl.textContent = "Не вдалося завантажити передбачення. Спробуйте пізніше.";
+    elements.tarotCardEl?.removeAttribute("aria-busy");
+    setShareEnabled(elements, false);
+    updateSaveButtonState(elements, state);
+    updateShareHint(elements, "Поширення стане доступним після успішного завантаження передбачення.");
+  } finally {
+    elements.tarotCardEl?.setAttribute("aria-label", "Карта передбачення");
+    if (elements.tarotCardEl) {
+      elements.tarotCardEl.tabIndex = 0;
+    }
+    delete document.body.dataset.entry;
+  }
+}
+
 function saveCurrentFortune(elements, state) {
   if (!state.currentFortune || isFortuneSaved(state.savedFortunes, state.currentFortune)) {
     updateSaveButtonState(elements, state);
@@ -712,6 +803,12 @@ export function bootstrapApp() {
   const elements = getElements();
   const state = createAppState();
   const badgeEl = createBadge(elements.cardShellEl);
+  const nfcAnimationId = getNfcAnimationFromUrl();
+
+  if (nfcAnimationId) {
+    document.body.dataset.entry = "nfc";
+    document.body.dataset.nfcVariant = nfcAnimationId;
+  }
 
   loadTheme(elements.themeToggleBtn);
   state.savedFortunes = loadSavedFortunes();
@@ -720,11 +817,16 @@ export function bootstrapApp() {
   setActiveView(elements, "main");
   updateSaveButtonState(elements, state);
   bindEvents(elements, state, badgeEl);
-  maybeShowMenuTooltip(elements);
+  if (!nfcAnimationId) {
+    maybeShowMenuTooltip(elements);
+  }
 
   loadCurrentDeckFortunes(state)
     .then(({ deck }) => {
       applyDeckAppearance(elements, badgeEl, state, deck);
+      if (nfcAnimationId) {
+        runNfcEntry(elements, state, badgeEl, nfcAnimationId);
+      }
     })
     .catch(() => {});
 }

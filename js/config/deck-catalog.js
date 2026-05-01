@@ -67,6 +67,27 @@ export const DECK_CATALOG = {
         }
       }
     }),
+
+  spicy: buildDeck({
+      id: "spicy",
+      file: "fortunes_spicy.json",
+      badge: "🔥",
+      name: "Таємні бажання",
+      title: "SPICY",
+      description: "Офісний етикет закінчується там, де починається твоя фантазія.",
+      priority: 80,
+      galleryOrder: 1,
+      showInGallery: true,
+      backDesign: {
+        layout: "diagonal",
+        icons: ["❤", "21+"],
+        background: {
+          dark: "linear-gradient(135deg, #2d0a1a 0%, #000000 100%)",
+          light: "linear-gradient(135deg, #ff0a4b 0%, #fbc2eb 100%)"
+        }
+      }
+    }),
+
   summer: buildDeck({
       id: "summer",
       file: "fortunes_summer.json",
